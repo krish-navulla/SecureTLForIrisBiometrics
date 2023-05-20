@@ -99,7 +99,7 @@ def compute_distances_secure(yA, yP1, yP2, yN1, yN2):
     return np.array([dsp, ddp, dsn, ddn])
 
 
-def evaluate_triplet_model(model, data_loader, batch_size, device, debug=False, output_shape=100, N=1000, save_embeddings=False):
+def evaluate_triplet_model(model, data_loader, batch_size, device, debug=False, output_shape=100, N=10, save_embeddings=False):
     # Gets triplets from a data_loader and sends to triplet_metrics to compute triplet loss metrics.
     yA, yP, yN, xA = get_triplet_outputs(model, data_loader, batch_size, device, output_shape)
     if save_embeddings:
@@ -109,7 +109,7 @@ def evaluate_triplet_model(model, data_loader, batch_size, device, debug=False, 
     negatives = normalised_distance(yA, yN)
     distances = np.array([positives, negatives])
     out = (triplet_metrics(distances, debug=debug, N=N),)  # Transformed into a tuple
-    out += (triplet_it_measures(xA, yA, subset=1000),)
+    out += (triplet_it_measures(xA, yA, subset=47),)
     return out
 
 
@@ -125,7 +125,7 @@ def evaluate_secure_model(model, data_loader, batch_size, device, debug=False, o
     negatives_diffkey = normalised_distance(yA, yN2)
     distances = np.array([positives_samekey, positives_diffkey, negatives_samekey, negatives_diffkey])
     out = secure_metrics(distances, debug=debug, N=N)
-    out += (secure_it_measures(xA, yA, k1, subset=1000),)
+    out += (secure_it_measures(xA, yA, k1, subset=3),)
     return out
 
 

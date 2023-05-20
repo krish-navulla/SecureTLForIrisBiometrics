@@ -34,13 +34,13 @@ from facenet_pytorch.models.inception_resnet_v1 import BasicConv2d
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-SAVE_MODEL = 'Securetl_Iris_Inception_model'
+SAVE_MODEL = 'Securetl_Iris_Inception_model_50'
 TRAIN_SET = '/content/SecureTL/IRIS_Inception_resnet/face_train_data.npy'
 
 LEARN_RATE = 1e-4      # learning rate
 REG = 0.001            # L2 regularization hyperparameter
 
-N_EPOCHS = 5
+N_EPOCHS = 50
 BATCH_SIZE = 32
 VALID_SPLIT = .2 
 PATIENCE = 50

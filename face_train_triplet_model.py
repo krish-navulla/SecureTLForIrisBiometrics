@@ -19,23 +19,27 @@ import os
 import torch
 import numpy as np
 import pickle as pk
-from models import TripletModel, TripletFaceNetwork
+from models import TripletModel, TripletFaceNetwork, TripletIrisNetwork
 from losses import TripletLoss
 from dataset import TripletFaceDataset
 from trainer import train_triplet_model
 from torch.utils.data import DataLoader
-from facenet_pytorch import InceptionResnetV1
+import facenet_pytorch
+from facenet_pytorch.models.inception_resnet_v1 import InceptionResnetV1
+from facenet_pytorch.models.inception_resnet_v1 import BasicConv2d
+
+# from InceptionResnetV1 import BasicConv2d
 
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-SAVE_MODEL = 'model_name'
+SAVE_MODEL = 'triplet_iris_model'
 TRAIN_SET = 'face_train_data.npy'
 
 LEARN_RATE = 1e-4     # learning rate
 REG = 0.001           # L2 regularization hyperparameter
 
-N_EPOCHS = 500
+N_EPOCHS = 30
 BATCH_SIZE = 32
 VALID_SPLIT = .2 
 PATIENCE = 50
@@ -59,9 +63,13 @@ train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_wo
 valid_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4, sampler=valid_sampler)
 
 # Creating the network and the model
-pretrained = InceptionResnetV1(pretrained='vggface2')
-network = TripletFaceNetwork(pretrained, dropout_prob=0.6).to(DEVICE)
-network.freeze_parameters()  # Freezing all parameters except the fully-connected layer(s)
+# pretrained = InceptionResnetV1(pretrained='vggface2')
+# pretrained.conv2d_1a = BasicConv2d(1, 32, kernel_size=3, stride=2)
+
+# network = TripletFaceNetwork(pretrained, dropout_prob=0.6).to(DEVICE)
+# network.freeze_parameters()  # Freezing all parameters except the fully-connected layer(s)
+network = TripletIrisNetwork(dropout_prob = 0.5).to(DEVICE)
+
 model = TripletModel(network)
 loss = TripletLoss(margin=1.0)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARN_RATE, weight_decay=REG)

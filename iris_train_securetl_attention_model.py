@@ -21,7 +21,7 @@ import numpy as np
 import pickle as pk
 from models import SecureModel, SecureFaceNetwork, SecureIrisNetwork, SecureAttentionIrisNetwork
 from losses import SecureTripletLoss
-from dataset import SecureFaceDataset
+from dataset import SecureIrisAttentionDataset
 from trainer import train_secure_triplet_model
 from torch.utils.data import DataLoader
 from facenet_pytorch import InceptionResnetV1
@@ -34,13 +34,13 @@ from facenet_pytorch.models.inception_resnet_v1 import BasicConv2d
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-SAVE_MODEL = 'Securetl_Iris_Inception_model'
-TRAIN_SET = '/content/SecureTL/IRIS_Inception_resnet/face_train_data.npy'
+SAVE_MODEL = 'Securetl_Iris_Attention_model_50'
+TRAIN_SET = '/content/SecureTL/IRIS_Attention/face_train_data.npy'
 
 LEARN_RATE = 1e-4      # learning rate
 REG = 0.001            # L2 regularization hyperparameter
 
-N_EPOCHS = 5
+N_EPOCHS = 50
 BATCH_SIZE = 32
 VALID_SPLIT = .2 
 PATIENCE = 50
@@ -48,7 +48,7 @@ PATIENCE = 50
 print('Training model: ' + SAVE_MODEL)
 
 # Preparing and dividing the dataset
-trainset = SecureFaceDataset(TRAIN_SET)
+trainset = SecureIrisAttentionDataset(TRAIN_SET)
 
 dataset_size = len(trainset)  # number of samples in training + validation sets
 indices = list(range(dataset_size))
@@ -64,16 +64,17 @@ train_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_wo
 valid_loader = DataLoader(trainset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4, sampler=valid_sampler)
 
 # Creating the network and the model
-pretrained = InceptionResnetV1(pretrained='vggface2')
-pretrained.conv2d_1a = BasicConv2d(1, 32, kernel_size=3, stride=2)
+# pretrained = InceptionResnetV1(pretrained='vggface2')
+# pretrained.conv2d_1a = BasicConv2d(1, 32, kernel_size=3, stride=2)
 
-network = SecureFaceNetwork(pretrained, dropout_prob=0.5).to(DEVICE)
+# network = SecureFaceNetwork(pretrained, dropout_prob=0.5).to(DEVICE)
 #for Iris Inception/CNN
 # network = SecureIrisNetwork(dropout_prob = 0.5).to(DEVICE)
 
 #for Iris Vision Transformer
-network.freeze_parameters()  # Freezing all parameters except the fully-connected layer(s)
-
+# network.freeze_parameters()  # Freezing all parameters except the fully-connected layer(s)
+network = SecureAttentionIrisNetwork().to(DEVICE)
+network.freeze_parameters()
 model = SecureModel(network)
 loss = SecureTripletLoss(margin=1.0)
 optimizer = torch.optim.Adam(model.parameters(), lr=LEARN_RATE, weight_decay=REG)

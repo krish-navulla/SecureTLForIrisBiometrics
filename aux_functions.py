@@ -23,7 +23,10 @@ from PIL import Image
 from copy import deepcopy
 from matplotlib import pyplot as pl
 from sklearn.preprocessing import normalize
-
+import torchvision.transforms as transforms
+from torchvision.transforms.functional import InterpolationMode
+import torchvision
+import torch
 
 # AUXILIARY FUNCTIONS FOR THE FACE DATA
 
@@ -42,6 +45,24 @@ def process_image(origin, destination, id_name):
         img = Image.fromarray(img)
         img.save(out_path)
         return out_path
+
+def process_IRIS_image_attention(origin, destination, id_name):
+    # Used to open images and store them, prepared to be used,
+    # in the destination directory.
+    img_name = os.path.basename(origin)
+    out_path = os.path.join(destination, id_name + '_' + img_name)
+    if os.path.exists(out_path):
+        return out_path
+    else:
+      img = Image.open(origin)
+    
+      if img.mode != 'RGB':
+          img = img.convert('RGB')
+
+      img.save(out_path)
+      # Save the preprocessed image
+      # torch.save(img, out_path)
+      return out_path
 
 def generate_id_triplets(identity, db_dir, save_dir, all_identities, n_triplets=100):
     # Generates n triplets for a given identity.
@@ -77,6 +98,8 @@ def generate_id_triplets(identity, db_dir, save_dir, all_identities, n_triplets=
         negative = os.path.join(neg_v_dir, np.random.choice(neg_frames))
 
         # Take the images and process them to be used later:
+        # Use process_IRIS_image_attention while preparing data for attention model.
+        # Use process_image while preparing data for Inception-resnet model
         anchor_path = process_image(anchor, save_dir, identity)
         positive_path = process_image(positive, save_dir, identity)
         negative_path = process_image(negative, save_dir, neg_id)

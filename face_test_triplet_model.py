@@ -19,17 +19,21 @@ import os
 import torch
 import numpy as np
 import pickle as pk
-from models import TripletModel, TripletFaceNetwork
+from models import TripletModel, TripletFaceNetwork, TripletIrisNetwork
 from losses import TripletLoss
 from dataset import TripletFaceDataset
 from facenet_pytorch import InceptionResnetV1
 from torch.utils.data import DataLoader
 from eval import evaluate_triplet_model
 
+import facenet_pytorch
+from facenet_pytorch.models.inception_resnet_v1 import InceptionResnetV1
+from facenet_pytorch.models.inception_resnet_v1 import BasicConv2d
+
 
 DEVICE = 'cuda:0' if torch.cuda.is_available() else 'cpu'
 
-MODEL = 'model_name'
+MODEL = 'triplet_iris_model'
 TEST_DATA = 'face_test_data.npy'
 
 BATCH_SIZE = 32
@@ -40,9 +44,12 @@ print('Testing model: ' + MODEL)
 testset = TripletFaceDataset(TEST_DATA)
 test_loader = DataLoader(testset, batch_size=BATCH_SIZE, shuffle=False, num_workers=4)
 
+
 # Creating the model
-pretrained = InceptionResnetV1(pretrained='vggface2')
-network = TripletFaceNetwork(pretrained).to(DEVICE)
+# pretrained = InceptionResnetV1(pretrained='vggface2')
+# pretrained.conv2d_1a = BasicConv2d(1, 32, kernel_size=3, stride=2)
+
+network = TripletIrisNetwork(dropout_prob = 0.5).to(DEVICE)
 model = TripletModel(network)
 
 # Loading saved weights

@@ -33,7 +33,9 @@ joao.t.pinto@inesctec.pt  |  https://jtrpinto.github.io
 import torch
 import numpy as np
 import pickle as pk
+import PIL
 from PIL import Image
+import torchvision
 from torchvision import transforms
 from torch.utils.data import Dataset
 
@@ -87,7 +89,6 @@ class TripletECGDataset(Dataset):
         # Number of triplets on the dataset
         return len(self.xA)
 
-
 class SecureFaceDataset(Dataset):
     # Used to load face triplet data, including cancellability keys
     # for the SecureTL method.
@@ -107,10 +108,61 @@ class SecureFaceDataset(Dataset):
     def __loadimage__(self, imgpath):
         # Load image, apply d.a., transform to tensor, and normalise
         img = Image.open(imgpath)
+       
+
         tf = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5),
                                  np.float32,
                                  transforms.ToTensor(),
                                  self.__normalise__])  # Adapted from facenet_pytorch
+                                 
+        img = tf(img)
+        return img
+
+    def __getitem__(self, index):
+        # Load anchor, positive, negative, and the two keys for a given index
+        xA = self.__loadimage__(self.anchors[index])
+        xP = self.__loadimage__(self.positives[index])
+        xN = self.__loadimage__(self.negatives[index])
+        k1 = self.k1[index]
+        k2 = self.k2[index]
+        return (xA, xP, xN, k1, k2)
+
+    def __len__(self):
+        # Number of triplets on the dataset
+        return len(self.anchors)
+
+
+class SecureIrisAttentionDataset(Dataset):
+    # Used to load face triplet data, including cancellability keys
+    # for the SecureTL method.
+
+    def __init__(self, dataset):
+        dset = np.load(dataset, allow_pickle=True)
+        self.anchors = dset[:,0]
+        self.positives = dset[:,1]
+        self.negatives = dset[:,2]
+        self.k1 = dset[:,3]
+        self.k2 = dset[:,4]
+
+    def __normalise__(self, img):
+        # Normalise image pixel intensities
+        return (img - 127.5) / 128.0
+
+    def __loadimage__(self, imgpath):
+        # Load image, apply d.a., transform to tensor, and normalise
+        img = Image.open(imgpath)
+        # print(imgpath)
+        
+
+        # if img.size != (224, 224):
+        #   img = img.resize((224, 224))
+        
+        tf = torchvision.models.ViT_B_32_Weights.IMAGENET1K_V1.transforms()
+
+        # tf = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5),
+        #                          np.float32,
+        #                          transforms.ToTensor(),
+        #                          self.__normalise__])  # Adapted from facenet_pytorch
         img = tf(img)
         return img
 

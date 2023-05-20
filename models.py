@@ -24,6 +24,7 @@ joao.t.pinto@inesctec.pt  |  https://jtrpinto.github.io
 import torch
 from torch import nn
 from torch.nn import functional as F
+import torchvision
 
 
 class TripletECGNetwork(nn.Module):
@@ -366,3 +367,184 @@ class SecureModel(nn.Module):
     def get_embedding(self, x, k):
         # To get a secure embedding (template).
         return self.network(x, k)
+
+class SecureIrisNetwork(nn.Module):
+    # Defines the face secure network that processes a
+    # single biometric sample and a key. Is used with
+    # SecureModel for training with Secure Triplet Loss.
+
+    def __init__(self, dropout_prob = 0.5):
+        # Defining the structure of the secure network, based on
+        # the Inception-ResNet model with pretrained weights.
+        super(SecureIrisNetwork, self).__init__()
+        
+        self.layers = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            
+            nn.MaxPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(32, 16, kernel_size=3, padding=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(inplace=True),
+            
+            nn.AvgPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(16, 16, kernel_size=3, padding=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(inplace=True),
+            
+            nn.MaxPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(16, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            
+            nn.AvgPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32)
+            # nn.ReLU(inplace=True),
+            
+
+        )
+        
+        self.relu = nn.Sequential(nn.ReLU())
+        self.dropout = nn.Dropout(dropout_prob)
+        self.fc1 = nn.Sequential(nn.Linear(1668, 100), nn.ReLU())
+        self.fc2 = nn.Sequential(nn.Linear(100, 100), nn.ReLU())
+
+    def forward(self, x, k):
+        # Network's inference routine.
+        x = self.layers(x)
+        x = self.relu(x)
+        x = self.dropout(x)
+        x = x.view(x.shape[0], -1)
+        x = torch.cat((x, k), dim=1)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+    def get_embedding(self, x, k):
+        # To get a secure embedding (template).
+        return self.forward(x, k)
+
+
+class TripletIrisNetwork(nn.Module):
+    # Defines the face secure network that processes a
+    # single biometric sample and a key. Is used with
+    # SecureModel for training with Secure Triplet Loss.
+
+    def __init__(self, dropout_prob = 0.5):
+        # Defining the structure of the secure network, based on
+        # the Inception-ResNet model with pretrained weights.
+        super(TripletIrisNetwork, self).__init__()
+        self.layers = nn.Sequential(
+            nn.Conv2d(1, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            
+            nn.MaxPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(32, 16, kernel_size=3, padding=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(inplace=True),
+            
+            nn.AvgPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(16, 16, kernel_size=3, padding=1),
+            nn.BatchNorm2d(16),
+            nn.ReLU(inplace=True),
+            
+            nn.MaxPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(16, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+            
+            nn.AvgPool2d(kernel_size=5, stride=2),
+            nn.Conv2d(32, 32, kernel_size=3, padding=1),
+            nn.BatchNorm2d(32)
+            # nn.ReLU(inplace=True),
+            
+
+        )
+        
+        self.relu = nn.Sequential(nn.ReLU())
+        self.dropout = nn.Dropout(dropout_prob)
+        self.fc1 = nn.Sequential(nn.Linear(1568, 100), nn.ReLU())
+        self.fc2 = nn.Sequential(nn.Linear(100, 100), nn.ReLU())
+
+    def forward(self, x):
+        # Network's inference routine.
+        x = self.layers(x)
+        x = self.relu(x)
+        x = self.dropout(x)
+        x = x.view(x.shape[0], -1)
+        # x = torch.cat((x, k), dim=1)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+    def get_embedding(self, x):
+        # To get a secure embedding (template).
+        return self.forward(x)
+
+
+class SecureAttentionIrisNetwork(nn.Module):
+    # Defines the face secure network that processes a
+    # single biometric sample and a key. Is used with
+    # SecureModel for training with Secure Triplet Loss.
+
+    def __init__(self,  dropout_prob=0.5):
+        # Defining the structure of the secure network, based on
+        # the Inception-ResNet model with pretrained weights.
+        super(SecureAttentionIrisNetwork, self).__init__()
+        self.model = torchvision.models.vit_b_32(weights=torchvision.models.ViT_B_32_Weights.DEFAULT)
+        self.relu = nn.Sequential(nn.ReLU())
+        self.dropout = nn.Dropout(dropout_prob)
+        self.fc1 = nn.Sequential(nn.Linear(1100, 100), nn.ReLU())
+        self.fc2 = nn.Sequential(nn.Linear(100, 100), nn.ReLU())
+
+    def forward(self, x, k):
+        # Network's inference routine.
+        # print(x.shape)
+        x = self.model(x)
+        x = self.relu(x)
+        x = self.dropout(x)
+        x = x.view(x.shape[0], -1)
+        x = torch.cat((x, k), dim=1)
+        x = self.fc1(x)
+        x = self.fc2(x)
+        return x
+
+    def get_embedding(self, x, k):
+        # To get a secure embedding (template).
+        return self.forward(x, k)
+        
+    def freeze_parameters(self):
+        # Freezes parameters in the first part of the
+        # network to retain VGGFace2 pretrained weights.
+        for param in self.model.parameters():
+            param.requires_grad = False
+        
+    def unfreeze_parameters(self):
+        # Unfreezes the first part of the network.
+        for param in self.conv2d_1a.parameters():
+            param.requires_grad = True
+        for param in self.conv2d_2a.parameters():
+            param.requires_grad = True
+        for param in self.conv2d_2b.parameters():
+            param.requires_grad = True
+        for param in self.conv2d_3b.parameters():
+            param.requires_grad = True
+        for param in self.conv2d_4a.parameters():
+            param.requires_grad = True
+        for param in self.conv2d_4b.parameters():
+            param.requires_grad = True
+        for param in self.repeat_1.parameters():
+            param.requires_grad = True
+        for param in self.mixed_6a.parameters():
+            param.requires_grad = True
+        for param in self.repeat_2.parameters():
+            param.requires_grad = True
+        for param in self.mixed_7a.parameters():
+            param.requires_grad = True
+        for param in self.repeat_3.parameters():
+            param.requires_grad = True
+
+
