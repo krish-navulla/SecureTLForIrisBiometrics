@@ -157,8 +157,8 @@ class SecureIrisAttentionDataset(Dataset):
         # if img.size != (224, 224):
         #   img = img.resize((224, 224))
         
-        tf = torchvision.models.ViT_B_32_Weights.IMAGENET1K_V1.transforms()
-
+        # tf = torchvision.models.ViT_B_32_Weights.IMAGENET1K_V1.transforms()
+        tf = torchvision.models.ViT_B_16_Weights.IMAGENET1K_V1.transforms()
         # tf = transforms.Compose([transforms.RandomHorizontalFlip(p=0.5),
         #                          np.float32,
         #                          transforms.ToTensor(),

@@ -494,7 +494,8 @@ class SecureAttentionIrisNetwork(nn.Module):
         # Defining the structure of the secure network, based on
         # the Inception-ResNet model with pretrained weights.
         super(SecureAttentionIrisNetwork, self).__init__()
-        self.model = torchvision.models.vit_b_32(weights=torchvision.models.ViT_B_32_Weights.DEFAULT)
+        # self.model = torchvision.models.vit_b_32(weights=torchvision.models.ViT_B_32_Weights.DEFAULT)
+        self.model = torchvision.models.vit_b_16(weights=torchvision.models.ViT_B_16_Weights.DEFAULT)
         self.relu = nn.Sequential(nn.ReLU())
         self.dropout = nn.Dropout(dropout_prob)
         self.fc1 = nn.Sequential(nn.Linear(1100, 100), nn.ReLU())
@@ -546,5 +547,6 @@ class SecureAttentionIrisNetwork(nn.Module):
             param.requires_grad = True
         for param in self.repeat_3.parameters():
             param.requires_grad = True
+
 
 
