@@ -1,6 +1,6 @@
 # SecureTLForIrisBiometrics Project Repository
 
-**IMPLEMENTING THE SECURE TRIPLET LOSS FOR TEMPLATE CANCELABILITY IN IRIS BIOMETRICS**    
+**Implementing The Secure Triplet Loss For Template Cancelebility In Iris Biometrics**    
 Vamshi Krishna Navulla    
 *Department of Computer Science and Engineering University at Buffal0*   
 vnavulla@buffalo.edu
