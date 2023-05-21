@@ -10,10 +10,10 @@ vnavulla@buffalo.edu
 The data pre-processsing is done in the aux_functions.py, when called from the iris_prepare_AMF_inception.py. Also, the images are transformed in the dataset.py when called from the trainer scripts.  
 (2)**Fine Tuning**  
 Fine Tuning The models are loaded in the models.py in their respective init functions. The freeze member functions are responsible for freezing the layers.  
-(3) **Training**
-Training The traning is done in respective scripts, iris_secure_Inception/iris_secure_attention for inception resnet and Vit models respectively.
-(3) **Results**
-Results The results are shown with the help of result_analysis.py, where it calls the required plotting functions from the aux_functions.py script.
+(3) **Training**  
+Training The traning is done in respective scripts, iris_secure_Inception/iris_secure_attention for inception resnet and Vit models respectively.  
+(3) **Results**  
+Results The results are shown with the help of result_analysis.py, where it calls the required plotting functions from the aux_functions.py script.  
 
 ## Acknowledgements
 This repository is forked from the parent repository, from where the majority of the code was referenced from [[link]](https://github.com/jtrpinto/SecureTL),  which was published as part of their paper referenced below [[pdf]](https://jtrpinto.github.io/files/pdf/jpinto2021tbiom.pdf)
