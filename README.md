@@ -16,7 +16,7 @@ Training The traning is done in respective scripts, iris_secure_Inception/iris_s
 Results The results are shown with the help of result_analysis.py, where it calls the required plotting functions from the aux_functions.py script.
 
 ## Acknowledgements
-The majority of the code was referenced from the parent repository [[link]](https://github.com/jtrpinto/SecureTL),  which was published as part of their paper referenced below [[pdf]](https://jtrpinto.github.io/files/pdf/jpinto2021tbiom.pdf)
+This repository is forked from the parent repository, from where the majority of the code was referenced from [[link]](https://github.com/jtrpinto/SecureTL),  which was published as part of their paper referenced below [[pdf]](https://jtrpinto.github.io/files/pdf/jpinto2021tbiom.pdf)
 
 **J. R. Pinto, M. V. Correia, and J. S. Cardoso, "Secure Triplet Loss: Achieving Cancelability and Non-Linkability in End-to-End Deep Biometrics", in *IEEE Transactions on Biometrics, Behavior, and Identity Science,* 3(2): pp. 180-189, 2021.**    
 [[link]](https://ieeexplore.ieee.org/document/9302588) [[pdf]](https://jtrpinto.github.io/files/pdf/jpinto2021tbiom.pdf) [[bib]](https://jtrpinto.github.io/files/bibtex/jpinto2021tbiom.bib)    
