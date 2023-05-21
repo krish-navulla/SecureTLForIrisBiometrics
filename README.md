@@ -2,14 +2,14 @@
 
 **Implementing The Secure Triplet Loss For Template Cancelebility In Iris Biometrics**    
 Vamshi Krishna Navulla    
-*Department of Computer Science and Engineering University at Buffal0*   
+*Department of Computer Science and Engineering University at Buffalo*   
 vnavulla@buffalo.edu
 
 ## Summary
-(1) **Data Preprocessing** 
-The data pre-processsing is done in the aux_functions.py, when called from the iris_prepare_AMF_inception.py. Also, the images are transformed in the dataset.py when called from the trainer scripts.
-(2)**Fine Tuning**
-Fine Tuning The models are loaded in the models.py in their respective init functions. The freeze member functions are responsible for freezing the layers.
+(1) **Data Preprocessing**  
+The data pre-processsing is done in the aux_functions.py, when called from the iris_prepare_AMF_inception.py. Also, the images are transformed in the dataset.py when called from the trainer scripts.  
+(2)**Fine Tuning**  
+Fine Tuning The models are loaded in the models.py in their respective init functions. The freeze member functions are responsible for freezing the layers.  
 (3) **Training**
 Training The traning is done in respective scripts, iris_secure_Inception/iris_secure_attention for inception resnet and Vit models respectively.
 (3) **Results**
